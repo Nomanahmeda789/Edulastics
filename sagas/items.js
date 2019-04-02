@@ -1,5 +1,6 @@
-import { takeLatest, call, put, all, select } from 'redux-saga/effects';
-import { itemsApi, testItemActivityApi } from '@edulastic/api';
+import { takeEvery, takeLatest, call, put, all } from 'redux-saga/effects';
+import { itemsApi } from '@edulastic/api';
+import { message } from 'antd';
 
 import {
   RECEIVE_ITEM_REQUEST,
@@ -8,29 +9,30 @@ import {
   RECEIVE_ITEMS_REQUEST,
   RECEIVE_ITEMS_SUCCESS,
   RECEIVE_ITEMS_ERROR,
-  SAVE_USER_RESPONSE,
-  LOAD_USER_RESPONSE,
-  LOAD_ANSWERS
+  CREATE_ITEM_REQUEST,
+  UPDATE_ITEM_REQUEST
 } from '../constants/actions';
 
-function* receiveItemsSaga() {
+export function* receiveItemsSaga({ payload }) {
   try {
-    const items = yield call(itemsApi.receiveItems);
+    const { items, page, count } = yield call(itemsApi.receiveItems, payload);
 
     yield put({
       type: RECEIVE_ITEMS_SUCCESS,
-      payload: { items }
+      payload: { items, page, limit: payload.limit, count }
     });
   } catch (err) {
     console.error(err);
+    const errorMessage = 'Receive items is failing';
+    yield call(message.error, errorMessage);
     yield put({
       type: RECEIVE_ITEMS_ERROR,
-      payload: { error: 'Receive items is failing' }
+      payload: { error: errorMessage }
     });
   }
 }
 
-function* receiveItemSaga({ payload }) {
+export function* receiveItemSaga({ payload }) {
   try {
     const item = yield call(itemsApi.receiveItemById, payload.id);
 
@@ -40,75 +42,56 @@ function* receiveItemSaga({ payload }) {
     });
   } catch (err) {
     console.error(err);
+    const errorMessage = 'Receive item by id is failing';
+    yield call(message.error, errorMessage);
     yield put({
       type: RECEIVE_ITEM_ERROR,
-      payload: { error: 'Receive item by id is failing' }
+      payload: { error: errorMessage }
     });
   }
 }
 
-// fetch all questionIds from item
-const getQuestionIds = item => {
-  let questions = [];
-  item.rows.forEach(row => {
-    questions = [
-      ...questions,
-      ...row.widgets.map(widget => widget.entity && widget.entity.id)
-    ].filter(q => !!q);
-  });
-
-  return questions;
-};
-
-function* saveUserResponse({ payload }) {
+export function* createItemSaga({ payload }) {
   try {
-    const itemIndex = payload.itemId;
-    const items = yield select(state => state.test && state.test.items);
-    const answers = yield select(state => state.answers);
-    const userTestActivityId = yield select(
-      state => state.test && state.test.testActivityId
-    );
-    const currentItem = items.length && items[itemIndex];
-    const questions = getQuestionIds(currentItem);
-    const itemAnswers = {};
-    questions.forEach(question => {
-      itemAnswers[question] = answers[question];
-    });
-    const testItemId = currentItem._id;
-    const assignmentId = yield select(
-      state => state.studentAssignment && state.studentAssignment.current
-    );
-    yield call(testItemActivityApi.create, {
-      answers: itemAnswers,
-      testItemId,
-      assignmentId,
-      testActivityId: userTestActivityId
+    const item = yield call(itemsApi.createItem, payload);
+    yield put({
+      type: RECEIVE_ITEM_SUCCESS,
+      payload: { item: item.data }
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    const errorMessage = 'Create item is failed';
+    yield call(message.error, errorMessage);
+    yield put({
+      type: RECEIVE_ITEM_ERROR,
+      payload: { error: errorMessage }
+    });
   }
 }
 
-function* loadUserResponse({ payload }) {
+export function* updateItemSaga({ payload }) {
   try {
-    const itemIndex = payload.itemId;
-    const items = yield select(state => state.test && state.test.items);
-    const item = items[itemIndex];
-    const { answers } = yield call(itemsApi.getUserResponse, item._id);
+    const item = yield call(itemsApi.updateItemById, payload);
     yield put({
-      type: LOAD_ANSWERS,
-      payload: {
-        ...answers
-      }
+      type: RECEIVE_ITEM_SUCCESS,
+      payload: { item: item.data }
     });
-  } catch (e) {
-    console.log(e);
+  } catch (err) {
+    console.error(err);
+    const errorMessage = 'Update item is failed';
+    yield call(message.error, errorMessage);
+    yield put({
+      type: RECEIVE_ITEM_ERROR,
+      payload: { error: errorMessage }
+    });
   }
 }
+
 export default function* watcherSaga() {
   yield all([
-    yield takeLatest(RECEIVE_ITEM_REQUEST, receiveItemSaga),
-    yield takeLatest(SAVE_USER_RESPONSE, saveUserResponse),
-    yield takeLatest(LOAD_USER_RESPONSE, loadUserResponse)
+    yield takeEvery(RECEIVE_ITEM_REQUEST, receiveItemSaga),
+    yield takeLatest(RECEIVE_ITEMS_REQUEST, receiveItemsSaga),
+    yield takeLatest(CREATE_ITEM_REQUEST, createItemSaga),
+    yield takeLatest(UPDATE_ITEM_REQUEST, updateItemSaga)
   ]);
 }

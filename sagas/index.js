@@ -1,17 +1,29 @@
-import questionSaga from './question';
 import itemsSaga from './items';
-import testSaga from './test';
-import evaluationSaga from './evaluation';
-import viewSaga from './view';
-import assessmentSaga from './assessment';
+import itemDetailSaga from './itemDetail';
+import testItemsSaga from './testItems';
+import testItemSaga from './testItem';
+import questionSaga from './question';
+import testsSaga from './tests';
+import dictionariesSaga from './dictionaries';
+import assignmentSaga from './assignment';
+import { classBoardSaga } from '../ClassBoard';
+import { classResponsesSaga } from '../ClassResponses';
+import groupSaga from './group';
+import assignmentsSaga from './assignments';
 
-const assessmentSagas = [
-  questionSaga(),
+const authorSagas = [
   itemsSaga(),
-  testSaga(),
-  evaluationSaga(),
-  viewSaga(),
-  assessmentSaga()
+  itemDetailSaga(),
+  testItemsSaga(),
+  testItemSaga(),
+  questionSaga(),
+  testsSaga(),
+  dictionariesSaga(),
+  assignmentSaga(),
+  classBoardSaga(),
+  classResponsesSaga(),
+  groupSaga(),
+  assignmentsSaga()
 ];
 
-export default assessmentSagas;
+export default authorSagas;
