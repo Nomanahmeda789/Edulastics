@@ -1,9 +1,5 @@
-import { SET_ANSWER } from '../constants/actions';
+import { CLEAR_ANSWERS } from '../constants/actions';
 
-export const setUserAnswerAction = (questionId, data) => ({
-  type: SET_ANSWER,
-  payload: {
-    id: questionId,
-    data,
-  },
+export const clearAnswersAction = () => ({
+  type: CLEAR_ANSWERS
 });
