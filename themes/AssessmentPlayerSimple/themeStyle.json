@@ -1,0 +1,21 @@
+{
+  "progressStrokeColor": "#00b0ff",
+  "progressTrailColor": "#e2e2e2",
+  "saveIconColor": "#756e6e",
+  "saveIconBgColor": "#e2e2e2",
+  "submitIconColor": "#756e6e",
+  "CheckAnswerButtonText": "#ffffff",
+  "CheckAnswerButtonBg": "#40a9ff",
+  "NextPrevButtonTextColor": "#ffffff",
+  "NextPrevButtonBg": "#40a9ff",
+  "mainContentTextColor": "rgb(68, 68, 68)",
+  "mainContentBgColor": "white",
+  "mainContentFontSize": "16px",
+  "mainContentFontFamily": "'Source Sans Pro', 'Arial', sans-serif",
+  "sidebarBgColor": "rgb(243, 243, 243)",
+  "sidebarFontSize": "14px",
+  "sidebarActiveTextColor": "rgb(31, 227, 161)",
+  "sidebarTextColor": "rgb(135, 130, 130)",
+  "sidebarActiveCircleColor": "rgb(0, 176, 255)",
+  "sidebarFontFamily": "'Source Sans Pro', 'Arial', sans-serif"
+}
